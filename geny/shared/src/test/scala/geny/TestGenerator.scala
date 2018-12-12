@@ -2,56 +2,56 @@ package geny
 import utest._
 object TestGenerator extends TestSuite{
   val tests = this{
-    'toStrings{
+    "toStrings"-{
       def check(g: Generator[Int], expected: String) = {
         assert(g.toString == expected)
       }
       check(Generator(0, 1, 2), "Generator(WrappedArray(0, 1, 2))")
       check(Generator.from(0 until 3 toList), "Generator(List(0, 1, 2))")
     }
-    'unit{
+    "unit"-{
       def check[T](gen: Generator[T], expected: Seq[T]) = {
         val toSeq = gen.toSeq
         assert(toSeq == expected)
       }
-      'toSeq - check(Generator.from(0 until 10), 0 until 10)
+      "toSeq" - check(Generator.from(0 until 10), 0 until 10)
 
-      'find - {
+      "find" - {
         assert(Generator.from(0 until 10).find(_ % 5 == 4) == Some(4))
         assert(Generator.from(0 until 10).find(_ % 100 == 40) == None)
       }
-      'exists{
+      "exists"-{
         assert(Generator.from(0 until 10).exists(_ == 4) == true)
         assert(Generator.from(0 until 10).exists(_ == 40) == false)
       }
-      'contains{
+      "contains"-{
         assert(Generator.from(0 until 10).contains(4) == true)
         assert(Generator.from(0 until 10).contains(40) == false)
       }
-      'forAll{
+      "forAll"-{
         assert(Generator.from(0 until 10).forall(_  < 100) == true)
         assert(Generator.from(0 until 10).forall(_ < 5) == false)
       }
-      'count{
+      "count"-{
         assert(Generator.from(0 until 10).count(_  < 100) == 10)
         assert(Generator.from(0 until 10).count(_  > 100) == 0)
         assert(Generator.from(0 until 10).count(_ < 5) == 5)
         assert(Generator.from(0 until 10).count() == 10)
       }
 
-      'reduceLeft{
+      "reduceLeft"-{
         assert(Generator.from(0 until 10).reduceLeft(_ + _) == 45)
         intercept[UnsupportedOperationException](
           Generator.from(0 until 0).reduceLeft(_ + _)
         )
       }
-      'foldLeft{
+      "foldLeft"-{
         assert(Generator.from(0 until 10).foldLeft(0)(_ + _) == 45)
         assert(Generator.from(0 until 0).foldLeft(0)(_ + _) == 0)
       }
 
 
-      'concat{
+      "concat"-{
         check(
           Generator.from(0 until 10) ++ Generator.from(0 until 10),
           (0 until 10) ++ (0 until 10)
@@ -61,11 +61,11 @@ object TestGenerator extends TestSuite{
           0 until 20
         )
       }
-      'filter - {
+      "filter" - {
         check(Generator.from(0 until 10).filter(_ > 5), 6 until 10)
         check(Generator.from(0 until 10).withFilter(_ > 5), 6 until 10)
       }
-      'map - {
+      "map" - {
         check(Generator.from(0 until 10).map(_ + 1), 1 until 11)
         check(
           Generator.from(0 until 10).map(i => i.toString * i),
@@ -83,7 +83,7 @@ object TestGenerator extends TestSuite{
           )
         )
       }
-      'flatMap - {
+      "flatMap" - {
         val expected = Seq(
           1, 2, 0,
           1, 2, 1,
@@ -102,17 +102,17 @@ object TestGenerator extends TestSuite{
           expected
         )
       }
-      'collect{
+      "collect"-{
         check(
           Generator.from(0 until 10).collect{case k if k % 2 == 0 => k * k},
           Seq(0, 4, 16, 36, 64)
         )
       }
-      'collectFirst{
+      "collectFirst"-{
         Generator.from(0 until 10).collectFirst{case k if k > 5 => k * k} ==> Some(36)
         Generator.from(0 until 10).collectFirst{case k if k > 15 => k * k} ==> None
       }
-      'slice{
+      "slice"-{
         check(Generator.from(0 until 10).slice(3, 7), 3 until 7)
         check(Generator.from(0 until 10).take(3), 0 until 3)
         check(Generator.from(0 until 10).take(0), 0 until 0)
@@ -120,9 +120,9 @@ object TestGenerator extends TestSuite{
         check(Generator.from(0 until 10).drop(3), 3 until 10)
         check(Generator.from(0 until 10).drop(-1), 0 until 10)
       }
-      'takeWhile- check(Generator.from(0 until 10).takeWhile(_ < 5), 0 until 5)
-      'dropWhile - check(Generator.from(0 until 10).dropWhile(_ < 5), 5 until 10)
-      'zipWithIndex - check(
+      "takeWhile"- check(Generator.from(0 until 10).takeWhile(_ < 5), 0 until 5)
+      "dropWhile" - check(Generator.from(0 until 10).dropWhile(_ < 5), 5 until 10)
+      "zipWithIndex" - check(
         Generator.from(5 until 10).zipWithIndex,
         Seq(
           5 -> 0,
@@ -132,8 +132,8 @@ object TestGenerator extends TestSuite{
           9 -> 4
         )
       )
-      'zip{
-        'simple - check(
+      "zip"-{
+        "simple" - check(
           Generator.from(0 until 5).zip(Seq('a', 'b', 'c', 'd', 'e')),
           Seq(
             0 -> 'a',
@@ -143,7 +143,7 @@ object TestGenerator extends TestSuite{
             4 -> 'e'
           )
         )
-        'truncateIfGenLonger - check(
+        "truncateIfGenLonger" - check(
           Generator.from(0 until 99).zip(Seq('a', 'b', 'c', 'd', 'e')),
           Seq(
             0 -> 'a',
@@ -153,7 +153,7 @@ object TestGenerator extends TestSuite{
             4 -> 'e'
           )
         )
-        'truncateIfIterableLonger - check(
+        "truncateIfIterableLonger" - check(
           Generator.from(0 until 5).zip(Seq('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')),
           Seq(
             0 -> 'a',
@@ -164,20 +164,20 @@ object TestGenerator extends TestSuite{
           )
         )
       }
-      'head{
+      "head"-{
         assert(
           Generator.from(0 until 10).head == 0,
           Generator.from(5 until 10).head == 5
         )
       }
-      'headOption{
+      "headOption"-{
         assert(
           Generator.from(0 until 10).headOption == Some(0),
           Generator.from(5 until 10).headOption == Some(5),
           Generator.from(0 until 0).headOption == None
         )
       }
-      'conversions{
+      "conversions"-{
         assert(
           Generator.from(0 until 10).toSeq == (0 until 10),
           Generator.from(0 until 10).toVector == (0 until 10),
@@ -187,14 +187,14 @@ object TestGenerator extends TestSuite{
           Generator.from(0 until 10).toSet == (0 until 10).toSet
         )
       }
-      'mkString{
+      "mkString"-{
         assert(
           Generator.from(0 until 10).mkString == "0123456789",
           Generator.from(0 until 10).mkString(" ") == "0 1 2 3 4 5 6 7 8 9",
           Generator.from(0 until 10).mkString("[", ", ", "]") == "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
         )
       }
-      'aggregates{
+      "aggregates"-{
         assert(
           Generator.from(0 until 10).min == 0,
           Generator.from(0 until 10).max == 9,
@@ -206,7 +206,7 @@ object TestGenerator extends TestSuite{
           Generator.from(0 until 10).fold(0)(_ + _) == 45
         )
       }
-      'creation{
+      "creation"-{
         val range = 0 until 10
         val seq = range.toSeq
         val iterator = range.toIterator
@@ -222,7 +222,7 @@ object TestGenerator extends TestSuite{
           (set: Generator[Int]).sum == 45
         )
       }
-      'selfClosing{
+      "selfClosing"-{
         var openSources = 0
         class DummyCloseableSource{
           val iterator = Iterator(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -253,7 +253,7 @@ object TestGenerator extends TestSuite{
         assert(openSources == 0)
       }
     }
-    'laziness{
+    "laziness"-{
       var count = 0
       val taken = Generator.from(0 until 10).map{ x => count += 1; x + 1}.take(3)
       // Before evaluation, nothing has happened!
@@ -268,7 +268,7 @@ object TestGenerator extends TestSuite{
       assert(count == 6)
       assert(seqed2 == Seq(1, 2, 3))
     }
-    'combinations{
+    "combinations"-{
       def check[V](mkGen: Generator[Int] => Generator[V], mkSeq: Seq[Int] => Seq[V]) = {
         val seq = 0 until 10
         val gen = Generator.from(seq)
